@@ -49,28 +49,27 @@ int main(int argc, char *argv[]) {
 	dirExists(logsDir, 1);
 	dirExists(screenShotsDir, 1);
 
-	// Trick to add Command line
+	// Test command line argument to launch MOD
 	int romArg = 0;
-    if(argc > 1) {
-        int argl = strlen(argv[1]);
-        /*if(argl > 4 && !memcmp(argv[1], "rom=", 4)) {
-            loadsettings();
-            memcpy(packfile, argv[1] + 4, argl - 4);
-            romArg = 1;
-        }*/
-		loadsettings();
-		memcpy(packfile, argv[1], argl);
-		// Correct the Path
-		if(packfile[argl-1] != '/')
-			strcat(packfile, "/");
-		// Try if the Path exist?
-		if (dirExists(packfile, 0))
-			romArg = 1;
-    }
-    if(!romArg)
-        Menu();
+	if(argc > 1) {
+		int argl = strlen(argv[1]);
+		if(argl > 4) {
+			loadsettings();
+			memcpy(packfile, argv[1], argl);
+			if(dirExists(packfile, 0)) {
+				if(packfile[argl-1] != '/')
+					strcat(packfile, "/");
+					romArg = 1;
+			}
+			else if(memcmp( &packfile[strlen(packfile) - 4], ".pak", 4)) {
+				if(fileExists(packfile))
+					romArg = 1;
+			}
+		}
+	}
+	if(!romArg)
+		Menu();
 	
-	//strncpy(packfile, "/home/pi/RetroPie/roms/ports/openbor/Bare Knuckle Vacuum 3.01/", 128);
 	openborMain(argc, argv);
 	borExit(0);
 	return 0;
